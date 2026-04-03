@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  --color-black: #000000;
+  --color-white: #ffffff;
+}
+
+* {
+  border-width: 0;
+  outline: none;
+}
+
+*:focus {
+  outline: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+  }
+}
