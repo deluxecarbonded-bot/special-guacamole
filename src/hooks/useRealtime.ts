@@ -7,13 +7,15 @@ export function useRealtimePosts() {
   const [posts, setPosts] = useState<any[]>([])
 
   useEffect(() => {
+    let mounted = true
+
     const fetchPosts = async () => {
       const { data } = await supabase
         .from('posts')
         .select('*, profiles(*)')
         .order('created_at', { ascending: false })
         .limit(50)
-      setPosts(data || [])
+      if (mounted) setPosts(data || [])
     }
 
     fetchPosts()
@@ -21,11 +23,14 @@ export function useRealtimePosts() {
     const channel = supabase
       .channel('public:posts')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, 
-        payload => fetchPosts()
+        () => fetchPosts()
       )
       .subscribe()
 
-    return () => supabase.removeChannel(channel)
+    return () => {
+      mounted = false
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return posts
